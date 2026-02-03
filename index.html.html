@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#4F46E5">
+    <meta name="description" content="Application de gestion financière personnelle">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Finances">
+    <title>Gestion Financière</title>
+    
+    <!-- Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkdlc3Rpb24gRmluYW5jacOocmUiLAogICJzaG9ydF9uYW1lIjogIkZpbmFuY2VzIiwKICAiZGVzY3JpcHRpb24iOiAiR2VzdGlvbiBkZSB2b3MgZmluYW5jZXMgcGVyc29ubmVsbGVzIiwKICAic3RhcnRfdXJsIjogIi4vIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjZmZmZmZmIiwKICAidGhlbWVfY29sb3IiOiAiIzRGNDZFNSIsCiAgIm9yaWVudGF0aW9uIjogInBvcnRyYWl0IiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0l4T1RJaUlHaGxhV2RvZEQwaU1Ua3lJajQ4Y21WamRDQjNhV1IwYUQwaU1Ua3lJaUJvWldsbmFIUTlJakU1TWlJZ1ptbHNiRDBpSXpSR05EWkZOU0l2UGp4MFpYaDBJSGc5SWprMklpQjVQU0k1TmlJZ1ptOXVkQzF6YVhwbFBTSTBPQ0lnWm1sc2JEMGlJMlptWmlJK3c3d2tQQzl2WlhoMFBqd3ZjM1puUGc9PSIsCiAgICAgICJzaXplcyI6ICIxOTJ4MTkyIiwKICAgICAgInR5cGUiOiAiaW1hZ2Uvc3ZnK3htbCIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0sCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCNGJXeHVjejBpYUhSMGNEb3ZMM2QzZHk1M015NXZjbWN2TWpBd01DOXpkbWNpSUhkcFpIUm9QU0kxTVRJaUlHaGxhV2RvZEQwaU5URXlJajQ4Y21WamRDQjNhV1IwYUQwaU5URXlJaUJvWldsbmFIUTlJalV4TWlJZ1ptbHNiRDBpSXpSR05EWkZOU0l2UGp4MFpYaDBJSGc5SWpJMU5pSWdlVDBpTWpVMklpQm1iMjUwTFhOcGVtVTlJamN5SWlCbWFXeHNQU0lqWm1abUlqNWZJRHdrUEM5MFpYaDBQand2YzNablBnPT0iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9CiAgXQp9">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzRGNDZFNSIvPjx0ZXh0IHg9Ijk2IiB5PSI5NiIgZm9udC1zaXplPSI0OCIgZmlsbD0iI2ZmZiI+8J+Spjwvb2V4dD48L3N2Zz4=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iIzRGNDZFNSIvPjx0ZXh0IHg9Ijk2IiB5PSI5NiIgZm9udC1zaXplPSI0OCIgZmlsbD0iI2ZmZiI+8J+Spjwvb2V4dD48L3N2Zz4=">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div id="app"></div>
+
+    <script type="module">
+        // Variable pour stocker l'événement d'installation
+        let deferredPrompt;
+        
+        // Enregistrer le Service Worker pour PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    self.addEventListener('install', (e) => {
+                        self.skipWaiting();
+                    });
+                    
+                    self.addEventListener('activate', (e) => {
+                        self.clients.claim();
+                    });
+                    
+                    self.addEventListener('fetch', (e) => {
+                        e.respondWith(
+                            caches.match(e.request).then((response) => {
+                                return response || fetch(e.request);
+                            })
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('✅ PWA prête à être installée'))
+                    .catch(() => console.log('❌ Service Worker non disponible'));
+            });
+        }
+        
+        // Capturer l'événement beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Empêcher le mini-infobar par défaut
+            e.preventDefault();
+            // Stocker l'événement pour l'utiliser plus tard
+            deferredPrompt = e;
+            // Afficher le bouton d'installation
+            const installContainer = document.getElementById('installButtonContainer');
+            if (installContainer) {
+                installContainer.style.display = 'block';
+            }
+            console.log('✅ Installation PWA disponible');
+        });
+        
+        // Gérer le clic sur le bouton d'installation
+        window.addEventListener('DOMContentLoaded', () => {
+            const installButton = document.getElementById('installButton');
+            if (installButton) {
+                installButton.addEventListener('click', async () => {
+                    if (!deferredPrompt) {
+                        alert('❌ Installation non disponible.\n\nEssayez plutôt :\n1. Menu Chrome (⋮)\n2. "Ajouter à l\'écran d\'accueil"');
+                        return;
+                    }
+                    
+                    // Afficher la boîte de dialogue d'installation
+                    deferredPrompt.prompt();
+                    
+                    // Attendre la réponse de l'utilisateur
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('✅ Application installée');
+                        alert('✅ Application installée avec succès !\n\nVous la trouverez sur votre écran d\'accueil.');
+                    } else {
+                        console.log('❌ Installation annulée');
+                    }
+                    
+                    // Réinitialiser deferredPrompt
+                    deferredPrompt = null;
+                    
+                    // Cacher le bouton
+                    const installContainer = document.getElementById('installButtonContainer');
+                    if (installContainer) {
+                        installContainer.style.display = 'none';
+                    }
+                });
+            }
+        });
+        
+        // Détecter si déjà installé
+        window.addEventListener('appinstalled', () => {
+            console.log('✅ PWA installée');
+            const installContainer = document.getElementById('installButtonContainer');
+            if (installContainer) {
+                installContainer.style.display = 'none';
+            }
+        });
+        
+        // Configuration
+        const STORAGE_KEY = 'financeData';
+        
+        // État global
+        let state = {
+            exchangeRate: 45.7,
+            currentMonth: new Date().getMonth(),
+            currentYear: new Date().getFullYear(),
+            selectedMonth: new Date().getMonth(), // Mois actuel par défaut
+            selectedYear: new Date().getFullYear(), // Année actuelle par défaut
+            selectedYearView: new Date().getFullYear(),
+            monthlyData: {}, // Vide - données à remplir manuellement
+            activeTab: 'expenses', // Ouvrir directement sur les dépenses
+            editingItem: null,
+            showImportButton: false // Masquer le bouton d'import
+        };
+
+        const categories = [
+            { id: 'restaurant', name: 'Restaurant', color: '#E53E3E' },
+            { id: 'courses', name: 'Courses', color: '#0891B2' },
+            { id: 'essence', name: 'Essence', color: '#D97706' },
+            { id: 'telephonie', name: 'Téléphonie', color: '#7C3AED' },
+            { id: 'distributeur', name: 'Distributeur', color: '#059669' },
+            { id: 'divers', name: 'Divers', color: '#DB2777' },
+            { id: 'cadeaux', name: 'Cadeaux', color: '#DC2626' },
+            { id: 'loisirs', name: 'Loisirs', color: '#2563EB' },
+            { id: 'sante', name: 'Santé', color: '#EA580C' },
+            { id: 'transport', name: 'Transport', color: '#9333EA' }
+        ];
+
+        const defaultRecurringExpenses = [
+            { id: 1, name: 'Loyer', amount: 27508, category: 'Logement', fixed: false },
+            { id: 2, name: 'Électricité', amount: 0, category: 'Logement', fixed: false },
+            { id: 3, name: 'Eau', amount: 0, category: 'Logement', fixed: false },
+            { id: 4, name: 'Emtel', amount: 1700, category: 'Abonnements', fixed: false },
+            { id: 5, name: 'Mcvision', amount: 958, category: 'Abonnements', fixed: false },
+            { id: 6, name: 'Netflix', amount: 500, category: 'Abonnements', fixed: false }
+        ];
+
+        const variableRecurringExpenses = [];
+
+        // Utilitaires
+        function getMonthKey(month, year) {
+            return `${year}-${String(month + 1).padStart(2, '0')}`;
+        }
+
+        function getCurrentMonthKey() {
+            return getMonthKey(state.selectedMonth, state.selectedYear);
+        }
+
+        function initMonthData(monthKey) {
+            if (!state.monthlyData[monthKey]) {
+                state.monthlyData[monthKey] = {
+                    income: [],
+                    expenses: [],
+                    recurringIncome: [],
+                    recurringExpenses: [...defaultRecurringExpenses, ...variableRecurringExpenses]
+                };
+            }
+        }
+
+        function getCurrentData() {
+            const key = getCurrentMonthKey();
+            initMonthData(key);
+            return state.monthlyData[key];
+        }
+
+        // Charger les données
+        function loadData() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                state = { ...state, ...parsed };
+                // Forcer le mois actuel
+                state.selectedMonth = new Date().getMonth();
+                state.selectedYear = new Date().getFullYear();
+            }
+            // S'assurer que le mois actuel existe
+            initMonthData(getCurrentMonthKey());
+        }
+
+        // Sauvegarder les données
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        }
+
+        // Autocomplete pour les noms
+        function getAllExpenseNames() {
+            const names = new Set();
+            Object.values(state.monthlyData).forEach(monthData => {
+                monthData.expenses.forEach(expense => names.add(expense.name));
+            });
+            return Array.from(names).sort();
+        }
+
+        // Calculs
+        function getCalculations() {
+            const data = getCurrentData();
+            
+            const totalIncome = data.income.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+            const totalIncomeEur = data.income.reduce((sum, item) => 
+                sum + Number(item.amount || 0) / (item.exchangeRate || state.exchangeRate), 0);
+            
+            const totalRecurringIncome = data.recurringIncome.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+            const totalRecurringIncomeEur = totalRecurringIncome / state.exchangeRate;
+            
+            const totalRecurring = data.recurringExpenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+            const totalRecurringEur = totalRecurring / state.exchangeRate;
+            
+            const totalExpenses = data.expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+            const totalExpensesEur = data.expenses.reduce((sum, item) => 
+                sum + Number(item.amount || 0) / (item.exchangeRate || state.exchangeRate), 0);
+            
+            const totalAllIncome = totalIncome + totalRecurringIncome;
+            const totalAllIncomeEur = totalIncomeEur + totalRecurringIncomeEur;
+            
+            const balance = totalAllIncome - totalRecurring - totalExpenses;
+            const balanceEur = totalAllIncomeEur - totalRecurringEur - totalExpensesEur;
+
+            return {
+                totalIncome, totalIncomeEur,
+                totalRecurringIncome, totalRecurringIncomeEur,
+                totalAllIncome, totalAllIncomeEur,
+                totalRecurring, totalRecurringEur,
+                totalExpenses, totalExpensesEur,
+                balance, balanceEur
+            };
+        }
+
+        // Rendu
+        function render() {
+            const calc = getCalculations();
+            const app = document.getElementById('app');
+            
+            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+            const currentMonthName = monthNames[state.selectedMonth].toUpperCase();
+            const currentYear = state.selectedYear;
+
+            app.innerHTML = `
+                <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+                    <!-- Header -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-xl">
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-2 sm:py-3">
+                            <!-- Bouton d'installation PWA (apparaît seulement si possible) -->
+                            <div id="installButtonContainer" style="display: none;" class="mb-2">
+                                <button id="installButton" class="w-full bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg text-sm font-bold shadow-md transition-all flex items-center justify-center gap-2">
+                                    📲 Installer sur ce téléphone
+                                </button>
+                            </div>
+                            
+                            <div class="text-center mb-1">
+                                <h1 class="text-base sm:text-lg font-bold">GESTION FINANCIÈRE</h1>
+                            </div>
+                            
+                            <!-- Sélecteur de mois avec Backup au-dessus -->
+                            <div class="space-y-1 lg:space-y-0 lg:grid lg:grid-cols-3 lg:gap-3 lg:items-center">
+                                <!-- Navigation mois avec Backup au-dessus -->
+                                <div class="flex flex-col items-center gap-1">
+                                    <button onclick="quickBackup()" class="px-3 py-0.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold shadow-md transition-all">
+                                        💾 Backup
+                                    </button>
+                                    <div class="flex items-center gap-2">
+                                        <button onclick="previousMonth()" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-400 rounded-lg font-bold text-sm transition-colors">◀</button>
+                                        <div class="text-center min-w-[100px]">
+                                            <div class="text-base sm:text-lg font-bold">${currentMonthName}</div>
+                                            <div class="text-xs text-indigo-200">${currentYear}</div>
+                                        </div>
+                                        <button onclick="nextMonth()" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-400 rounded-lg font-bold text-sm transition-colors">▶</button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Solde compact -->
+                                <div class="text-center py-1.5 px-3 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-lg shadow-md">
+                                    <div class="text-xs text-white">SOLDE ACTUEL</div>
+                                    <div class="text-lg sm:text-xl font-bold">${calc.balance.toLocaleString('fr-FR')} Rs</div>
+                                    <div class="text-xs text-emerald-50">${calc.balanceEur.toFixed(2)} €</div>
+                                </div>
+                                
+                                <!-- Taux de change -->
+                                <div class="flex justify-center lg:justify-end">
+                                    <div class="text-center lg:text-right">
+                                        <div class="text-xs sm:text-sm text-indigo-100 mb-1">TAUX DE CHANGE</div>
+                                        <div class="text-sm sm:text-base mb-1">1 € =</div>
+                                        <button onclick="editRate()" class="px-3 sm:px-4 py-1 sm:py-2 bg-orange-500 hover:bg-orange-400 rounded-lg text-lg sm:text-xl font-bold transition-colors shadow-md">
+                                            ${state.exchangeRate} Rs
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    ${state.activeTab === 'home' ? renderHome(calc) : ''}
+                    ${state.activeTab !== 'home' ? `
+                        <!-- Navigation -->
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-4">
+                            <div class="bg-white rounded-lg shadow-lg p-2 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button onclick="changeTab('home')" class="py-3 px-2 sm:px-4 rounded-md font-medium transition-all text-xs sm:text-base ${state.activeTab === 'home' ? 'bg-indigo-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}">
+                                    🏠 Accueil
+                                </button>
+                                <button onclick="changeTab('income')" class="py-3 px-2 sm:px-4 rounded-md font-medium transition-all text-xs sm:text-base ${state.activeTab === 'income' ? 'bg-green-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}">
+                                    📈 Revenus
+                                </button>
+                                <button onclick="changeTab('expenses')" class="py-3 px-2 sm:px-4 rounded-md font-medium transition-all text-xs sm:text-base ${state.activeTab === 'expenses' ? 'bg-red-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}">
+                                    📉 Dépenses
+                                </button>
+                                <button onclick="changeTab('recurring')" class="py-3 px-2 sm:px-4 rounded-md font-medium transition-all text-xs sm:text-base col-span-2 sm:col-span-1 ${state.activeTab === 'recurring' ? 'bg-orange-600 text-white shadow-md' : 'text-gray-600 hover:bg-gray-50'}">
+                                    ⚙️ Dép. fixes
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+                            ${renderContent(calc)}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            // Setup autocomplete
+            if (state.activeTab === 'expenses') {
+                setupAutocomplete();
+            }
+        }
+
+        function renderHome(calc) {
+            const data = getCurrentData();
+            
+            // Données pour l'histogramme de comparaison
+            const comparisonData = [
+                { label: 'Revenus', montant: calc.totalAllIncome, color: '#10b981' },
+                { label: 'Dépenses', montant: calc.totalRecurring + calc.totalExpenses, color: '#ef4444' }
+            ];
+            
+            const maxValue = Math.max(calc.totalAllIncome, calc.totalRecurring + calc.totalExpenses);
+            
+            // Données pour la répartition des dépenses par catégorie
+            const categoryTotals = {};
+            data.expenses.forEach(expense => {
+                if (!categoryTotals[expense.category]) {
+                    categoryTotals[expense.category] = 0;
+                }
+                categoryTotals[expense.category] += expense.amount;
+            });
+            
+            const categoryData = categories
+                .map(cat => ({
+                    name: cat.name,
+                    value: categoryTotals[cat.id] || 0,
+                    color: cat.color
+                }))
+                .filter(item => item.value > 0)
+                .sort((a, b) => b.value - a.value);
+            
+            const totalCategoryExpenses = categoryData.reduce((sum, item) => sum + item.value, 0);
+            
+            return `
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+                    <!-- Boutons: 4 sur une ligne -->
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <button onclick="changeTab('yearView')" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-2 rounded-lg font-semibold shadow-md transition-all text-xs sm:text-sm">
+                            📊 Vue Annuelle
+                        </button>
+                        <button onclick="changeTab('charts')" class="bg-purple-600 hover:bg-purple-700 text-white py-2 px-2 rounded-lg font-semibold shadow-md transition-all text-xs sm:text-sm">
+                            🥧 Graphiques
+                        </button>
+                        <button onclick="exportData()" class="bg-green-600 hover:bg-green-700 text-white py-2 px-2 rounded-lg font-semibold shadow-md transition-all text-xs sm:text-sm">
+                            📤 Exporter
+                        </button>
+                        <button onclick="document.getElementById('importFile').click()" class="bg-orange-600 hover:bg-orange-700 text-white py-2 px-2 rounded-lg font-semibold shadow-md transition-all text-xs sm:text-sm">
+                            📥 Importer
+                        </button>
+                        <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importData(event)">
+                    </div>
+                    
+                    <!-- Pavés compacts sur une ligne -->
+                    <div class="grid grid-cols-3 gap-2 mb-2">
+                        <button onclick="changeTab('income')" class="bg-white rounded-lg shadow-md p-2 sm:p-3 border-l-4 border-green-500 hover:shadow-lg transition-all text-left">
+                            <p class="text-gray-500 text-xs font-medium">Revenus</p>
+                            <p class="text-base sm:text-lg font-bold text-green-600">${calc.totalIncome.toLocaleString('fr-FR')}</p>
+                            <p class="text-xs text-gray-400">${calc.totalIncomeEur.toFixed(2)} €</p>
+                        </button>
+                        <button onclick="changeTab('recurring')" class="bg-white rounded-lg shadow-md p-2 sm:p-3 border-l-4 border-orange-500 hover:shadow-lg transition-all text-left">
+                            <p class="text-gray-500 text-xs font-medium">Dép. fixes</p>
+                            <p class="text-base sm:text-lg font-bold text-orange-600">${calc.totalRecurring.toLocaleString('fr-FR')}</p>
+                            <p class="text-xs text-gray-400">${calc.totalRecurringEur.toFixed(2)} €</p>
+                        </button>
+                        <button onclick="changeTab('expenses')" class="bg-white rounded-lg shadow-md p-2 sm:p-3 border-l-4 border-red-500 hover:shadow-lg transition-all text-left">
+                            <p class="text-gray-500 text-xs font-medium">Dép. variables</p>
+                            <p class="text-base sm:text-lg font-bold text-red-600">${calc.totalExpenses.toLocaleString('fr-FR')}</p>
+                            <p class="text-xs text-gray-400">${calc.totalExpensesEur.toFixed(2)} €</p>
+                        </button>
+                    </div>
+
+                    <!-- Totaux sur une ligne -->
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        <div class="bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg shadow-md p-2 sm:p-3 border-l-4 border-green-600">
+                            <p class="text-gray-600 text-xs font-semibold">REVENUS TOTAUX</p>
+                            <p class="text-lg sm:text-xl font-bold text-green-700">${calc.totalAllIncome.toLocaleString('fr-FR')}</p>
+                            <p class="text-xs text-gray-500">Rs (${calc.totalAllIncomeEur.toFixed(2)} €)</p>
+                        </div>
+                        <div class="bg-gradient-to-r ${calc.balance >= 0 ? 'from-blue-50 to-indigo-50' : 'from-red-50 to-orange-50'} rounded-lg shadow-md p-2 sm:p-3 border-l-4 ${calc.balance >= 0 ? 'border-blue-600' : 'border-red-600'}">
+                            <p class="text-gray-600 text-xs font-semibold">SOLDE FINAL</p>
+                            <p class="text-lg sm:text-xl font-bold ${calc.balance >= 0 ? 'text-blue-700' : 'text-red-700'}">${calc.balance.toLocaleString('fr-FR')}</p>
+                            <p class="text-xs text-gray-500">Rs (${calc.balanceEur.toFixed(2)} €)</p>
+                        </div>
+                    </div>
+
+                    <!-- Graphiques - 2 colonnes sur desktop, 1 colonne sur mobile -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+                        <!-- Histogramme Revenus vs Dépenses -->
+                        <div class="bg-white rounded-xl shadow-xl p-4 sm:p-6">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Revenus vs Dépenses</h3>
+                            <div class="space-y-4 sm:space-y-6">
+                                ${comparisonData.map(item => `
+                                    <div>
+                                        <div class="flex justify-between mb-2">
+                                            <span class="font-medium text-gray-700 text-sm sm:text-base">${item.label}</span>
+                                            <span class="font-bold text-sm sm:text-base" style="color: ${item.color}">${item.montant.toLocaleString('fr-FR')} Rs</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-10 sm:h-12 overflow-hidden">
+                                            <div class="h-10 sm:h-12 rounded-full flex items-center justify-end pr-3 text-white font-bold text-sm sm:text-base" 
+                                                 style="width: ${(item.montant / maxValue * 100)}%; background-color: ${item.color}">
+                                                ${((item.montant / maxValue) * 100).toFixed(0)}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            ${calc.balance >= 0 ? `
+                                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                                    <p class="text-xs sm:text-sm text-blue-800">✅ Vous êtes en positif de <span class="font-bold">${calc.balance.toLocaleString('fr-FR')} Rs</span></p>
+                                </div>
+                            ` : `
+                                <div class="mt-4 sm:mt-6 p-3 sm:p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
+                                    <p class="text-xs sm:text-sm text-red-800">⚠️ Vous êtes en négatif de <span class="font-bold">${Math.abs(calc.balance).toLocaleString('fr-FR')} Rs</span></p>
+                                </div>
+                            `}
+                        </div>
+
+                        <!-- Répartition des dépenses par catégorie -->
+                        <div class="bg-white rounded-xl shadow-xl p-4 sm:p-6">
+                            <h3 class="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Dépenses par catégorie</h3>
+                            ${categoryData.length > 0 ? `
+                                <div class="space-y-3 sm:space-y-4">
+                                    ${categoryData.map(item => `
+                                        <div>
+                                            <div class="flex justify-between mb-2">
+                                                <span class="font-medium text-gray-700 text-sm sm:text-base">${item.name}</span>
+                                                <span class="font-bold text-gray-900 text-sm sm:text-base">${item.value.toLocaleString('fr-FR')} Rs</span>
+                                            </div>
+                                            <div class="w-full bg-gray-200 rounded-full h-6 sm:h-8 overflow-hidden">
+                                                <div class="h-6 sm:h-8 rounded-full flex items-center justify-end pr-2 font-bold text-xs sm:text-sm transition-all" 
+                                                     style="width: ${Math.max((item.value / totalCategoryExpenses * 100), 8)}%; background-color: ${item.color}; color: ${item.color === '#D97706' ? '#fff' : '#fff'};">
+                                                    ${((item.value / totalCategoryExpenses) * 100).toFixed(0)}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <div class="mt-4 sm:mt-6 pt-3 sm:pt-4 border-t border-gray-200">
+                                    <div class="flex justify-between text-base sm:text-lg font-bold">
+                                        <span class="text-gray-800">Total</span>
+                                        <span class="text-red-600">${totalCategoryExpenses.toLocaleString('fr-FR')} Rs</span>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="h-48 sm:h-64 flex items-center justify-center text-gray-400">
+                                    <div class="text-center">
+                                        <p class="text-3xl sm:text-4xl mb-2">📊</p>
+                                        <p class="text-sm sm:text-base">Aucune dépense enregistrée ce mois</p>
+                                    </div>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderContent(calc) {
+            switch(state.activeTab) {
+                case 'income': return renderIncome(calc);
+                case 'expenses': return renderExpenses(calc);
+                case 'recurring': return renderRecurring(calc);
+                case 'yearView': return renderYearView();
+                case 'charts': return renderCharts();
+                default: return '';
+            }
+        }
+
+        function renderCharts() {
+            const data = getCurrentData();
+            
+            // Calculer les dépenses par catégorie (variables)
+            const categoryTotals = {};
+            data.expenses.forEach(expense => {
+                const cat = categories.find(c => c.id === expense.category);
+                const catName = cat ? cat.name : 'Divers';
+                const catColor = cat ? cat.color : '#95E1D3';
+                
+                if (!categoryTotals[catName]) {
+                    categoryTotals[catName] = { total: 0, color: catColor };
+                }
+                categoryTotals[catName].total += expense.amount;
+            });
+            
+            // Calculer les dépenses fixes
+            const fixedTotal = data.recurringExpenses.reduce((sum, item) => sum + item.amount, 0);
+            
+            // Préparer les données pour le camembert
+            const categoryData = Object.entries(categoryTotals)
+                .map(([name, data]) => ({ name, total: data.total, color: data.color }))
+                .sort((a, b) => b.total - a.total);
+            
+            const totalVariable = categoryData.reduce((sum, item) => sum + item.total, 0);
+            const grandTotal = totalVariable + fixedTotal;
+            
+            // Calculer les pourcentages et angles pour le camembert
+            let currentAngle = 0;
+            const slices = categoryData.map(item => {
+                const percentage = grandTotal > 0 ? (item.total / grandTotal) * 100 : 0;
+                const angle = grandTotal > 0 ? (item.total / grandTotal) * 360 : 0;
+                const slice = {
+                    name: item.name,
+                    total: item.total,
+                    color: item.color,
+                    percentage: percentage,
+                    startAngle: currentAngle,
+                    endAngle: currentAngle + angle
+                };
+                currentAngle += angle;
+                return slice;
+            });
+            
+            // Ajouter les dépenses fixes comme une tranche
+            if (fixedTotal > 0) {
+                const fixedPercentage = (fixedTotal / grandTotal) * 100;
+                const fixedAngle = (fixedTotal / grandTotal) * 360;
+                slices.push({
+                    name: 'Dépenses fixes',
+                    total: fixedTotal,
+                    color: '#FF6B35',
+                    percentage: fixedPercentage,
+                    startAngle: currentAngle,
+                    endAngle: currentAngle + fixedAngle
+                });
+            }
+            
+            // Générer le SVG du camembert
+            const radius = 100;
+            const centerX = 120;
+            const centerY = 120;
+            
+            function polarToCartesian(angle) {
+                const rad = (angle - 90) * Math.PI / 180;
+                return {
+                    x: centerX + radius * Math.cos(rad),
+                    y: centerY + radius * Math.sin(rad)
+                };
+            }
+            
+            function createSlicePath(startAngle, endAngle) {
+                const start = polarToCartesian(startAngle);
+                const end = polarToCartesian(endAngle);
+                const largeArc = endAngle - startAngle > 180 ? 1 : 0;
+                return 'M ' + centerX + ' ' + centerY + ' L ' + start.x + ' ' + start.y + ' A ' + radius + ' ' + radius + ' 0 ' + largeArc + ' 1 ' + end.x + ' ' + end.y + ' Z';
+            }
+            
+            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'];
+            const currentMonthName = monthNames[state.selectedMonth];
+            
+            return '<div class="space-y-6"><div class="bg-white rounded-xl shadow-lg p-6"><h2 class="text-2xl font-bold text-gray-800 mb-4">Répartition des dépenses - ' + currentMonthName + ' ' + state.selectedYear + '</h2>' + (grandTotal > 0 ? '<div class="grid grid-cols-1 lg:grid-cols-2 gap-6"><div class="flex justify-center items-center"><svg viewBox="0 0 240 240" class="w-full max-w-sm">' + slices.map(slice => '<path d="' + createSlicePath(slice.startAngle, slice.endAngle) + '" fill="' + slice.color + '" stroke="white" stroke-width="2" class="hover:opacity-80 transition-opacity"><title>' + slice.name + ': ' + slice.total.toLocaleString('fr-FR') + ' Rs (' + slice.percentage.toFixed(1) + '%)</title></path>').join('') + '<circle cx="' + centerX + '" cy="' + centerY + '" r="40" fill="white"/><text x="' + centerX + '" y="' + centerY + '" text-anchor="middle" dominant-baseline="middle" class="text-lg font-bold fill-gray-800">' + grandTotal.toLocaleString('fr-FR') + '</text><text x="' + centerX + '" y="' + (centerY + 15) + '" text-anchor="middle" class="text-xs fill-gray-500">Rs</text></svg></div><div class="space-y-3">' + slices.map(slice => '<div class="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors"><div class="flex items-center gap-3"><div class="w-6 h-6 rounded" style="background-color: ' + slice.color + '"></div><div><div class="font-medium text-gray-800">' + slice.name + '</div><div class="text-sm text-gray-500">' + slice.percentage.toFixed(1) + '%</div></div></div><div class="text-right"><div class="font-bold text-gray-900">' + slice.total.toLocaleString('fr-FR') + ' Rs</div><div class="text-sm text-gray-500">' + (slice.total / state.exchangeRate).toFixed(2) + ' €</div></div></div>').join('') + '</div></div>' : '<div class="text-center py-12 text-gray-400"><p class="text-xl mb-2">📊</p><p>Aucune dépense enregistrée ce mois</p></div>') + '</div><div class="bg-white rounded-xl shadow-lg p-6"><h3 class="text-xl font-bold text-gray-800 mb-4">Détail par catégorie de dépenses variables</h3>' + (categoryData.length > 0 ? '<div class="space-y-3">' + categoryData.map(cat => '<div class="flex items-center justify-between p-4 rounded-lg" style="background-color: ' + cat.color + '20"><div class="flex items-center gap-3"><div class="w-4 h-4 rounded-full" style="background-color: ' + cat.color + '"></div><span class="font-medium text-gray-800">' + cat.name + '</span></div><div class="text-right"><div class="font-bold text-gray-900">' + cat.total.toLocaleString('fr-FR') + ' Rs</div><div class="text-sm text-gray-500">' + (cat.total / totalVariable * 100).toFixed(1) + '% des dépenses variables</div></div></div>').join('') + '</div>' : '<p class="text-gray-400 text-center py-8">Aucune dépense variable</p>') + '</div></div>';
+        }
+
+        function renderYearView() {
+            const monthlyTotals = [];
+            const monthNames = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'];
+            
+            for (let month = 0; month < 12; month++) {
+                const monthKey = getMonthKey(month, state.selectedYearView);
+                const monthData = state.monthlyData[monthKey] || { income: [], expenses: [], recurringIncome: [], recurringExpenses: [] };
+                
+                const totalIncome = monthData.income.reduce((sum, item) => sum + Number(item.amount || 0), 0) +
+                                  monthData.recurringIncome.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+                const totalExpenses = monthData.expenses.reduce((sum, item) => sum + Number(item.amount || 0), 0) +
+                                    monthData.recurringExpenses.reduce((sum, item) => sum + Number(item.amount || 0), 0);
+                const balance = totalIncome - totalExpenses;
+                
+                monthlyTotals.push({
+                    month: monthNames[month],
+                    monthNum: month,
+                    revenus: totalIncome,
+                    depenses: totalExpenses,
+                    solde: balance
+                });
+            }
+            
+            const yearTotal = {
+                revenus: monthlyTotals.reduce((sum, m) => sum + m.revenus, 0),
+                depenses: monthlyTotals.reduce((sum, m) => sum + m.depenses, 0),
+                solde: monthlyTotals.reduce((sum, m) => sum + m.solde, 0)
+            };
+            
+            const maxValue = Math.max(...monthlyTotals.map(m => Math.max(m.revenus, m.depenses)), 1);
+            
+            // Histogramme vertical en barres côte à côte
+            const barChartHTML = monthlyTotals.map(month => {
+                const revPct = maxValue > 0 ? (month.revenus / maxValue * 100) : 0;
+                const depPct = maxValue > 0 ? (month.depenses / maxValue * 100) : 0;
+                const hasData = month.revenus > 0 || month.depenses > 0;
+                return `
+                    <div class="flex flex-col items-center flex-1" style="min-width:0;">
+                        <!-- Barres hautes à bas -->
+                        <div class="w-full flex items-end justify-center gap-0.5" style="height: 140px;">
+                            <!-- Barre Revenus -->
+                            <div class="w-[42%] bg-gray-100 rounded-t-sm flex items-end" style="height:100%;">
+                                <div class="w-full bg-green-500 rounded-t-sm transition-all flex items-end justify-center" style="height: ${revPct}%; min-height: ${month.revenus > 0 ? '4px' : '0px'};">
+                                    ${month.revenus > 0 && revPct > 12 ? '<span class="text-white font-bold pb-1" style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px;">' + month.revenus.toLocaleString('fr-FR') + '</span>' : ''}
+                                </div>
+                            </div>
+                            <!-- Barre Dépenses -->
+                            <div class="w-[42%] bg-gray-100 rounded-t-sm flex items-end" style="height:100%;">
+                                <div class="w-full bg-red-500 rounded-t-sm transition-all flex items-end justify-center" style="height: ${depPct}%; min-height: ${month.depenses > 0 ? '4px' : '0px'};">
+                                    ${month.depenses > 0 && depPct > 12 ? '<span class="text-white font-bold pb-1" style="writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px;">' + month.depenses.toLocaleString('fr-FR') + '</span>' : ''}
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Étiquette mois -->
+                        <div class="text-xs font-bold text-gray-600 mt-1">${month.month}</div>
+                        <!-- Solde sous chaque mois en vertical -->
+                        ${hasData ? '<div class="text-xs font-bold ' + (month.solde >= 0 ? 'text-green-600' : 'text-red-600') + '" style="writing-mode: vertical-rl; transform: rotate(180deg); margin-top: 2px;">' + month.solde.toLocaleString('fr-FR') + '</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="space-y-4">
+                    <!-- Header année -->
+                    <div class="bg-white rounded-xl shadow-lg p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <button onclick="changeYearView(${state.selectedYearView - 1})" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-bold text-sm">◀ ${state.selectedYearView - 1}</button>
+                            <h2 class="text-2xl font-bold text-gray-800">Année ${state.selectedYearView}</h2>
+                            <button onclick="changeYearView(${state.selectedYearView + 1})" class="px-3 py-1 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg font-bold text-sm">${state.selectedYearView + 1} ▶</button>
+                        </div>
+                        <!-- 3 totaux compacts -->
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="bg-green-50 rounded-lg p-2 border-l-4 border-green-500">
+                                <p class="text-xs text-gray-600">Revenus</p>
+                                <p class="text-base font-bold text-green-600">${yearTotal.revenus.toLocaleString('fr-FR')}</p>
+                                <p class="text-xs text-gray-500">${(yearTotal.revenus / state.exchangeRate).toFixed(2)} €</p>
+                            </div>
+                            <div class="bg-red-50 rounded-lg p-2 border-l-4 border-red-500">
+                                <p class="text-xs text-gray-600">Dépenses</p>
+                                <p class="text-base font-bold text-red-600">${yearTotal.depenses.toLocaleString('fr-FR')}</p>
+                                <p class="text-xs text-gray-500">${(yearTotal.depenses / state.exchangeRate).toFixed(2)} €</p>
+                            </div>
+                            <div class="bg-blue-50 rounded-lg p-2 border-l-4 border-blue-500">
+                                <p class="text-xs text-gray-600">Solde</p>
+                                <p class="text-base font-bold ${yearTotal.solde >= 0 ? 'text-blue-600' : 'text-red-600'}">${yearTotal.solde.toLocaleString('fr-FR')}</p>
+                                <p class="text-xs text-gray-500">${(yearTotal.solde / state.exchangeRate).toFixed(2)} €</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Histogramme vertical côte à côte -->
+                    <div class="bg-white rounded-xl shadow-lg p-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="text-lg font-bold text-gray-800">Évolution mensuelle ${state.selectedYearView}</h3>
+                            <div class="flex items-center gap-3">
+                                <div class="flex items-center gap-1"><div class="w-3 h-3 bg-green-500 rounded-sm"></div><span class="text-xs text-gray-600">Revenus</span></div>
+                                <div class="flex items-center gap-1"><div class="w-3 h-3 bg-red-500 rounded-sm"></div><span class="text-xs text-gray-600">Dépenses</span></div>
+                            </div>
+                        </div>
+                        <!-- Barres côte à côte pour les 12 mois -->
+                        <div class="flex justify-between gap-1 px-1">
+                            ${barChartHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderIncome(calc) {
+            const data = getCurrentData();
+            return `
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Ajouter un revenu</h3>
+                        <form onsubmit="addIncome(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                            <input type="text" name="name" placeholder="Nom du revenu" required
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <input type="number" step="0.01" name="amount" placeholder="Montant" required
+                                autocomplete="off"
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <select name="currency" class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                                <option value="Rs">Roupies (Rs)</option>
+                                <option value="EUR">Euros (€)</option>
+                            </select>
+                            <input type="date" name="date" value="${new Date().toISOString().split('T')[0]}"
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <button type="submit" class="bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 text-sm sm:text-base">
+                                ➕ Ajouter
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">Liste des revenus</h3>
+                            <div class="text-right">
+                                <div class="text-lg sm:text-2xl font-bold text-green-600">${calc.totalIncome.toLocaleString('fr-FR')} Rs</div>
+                                <div class="text-sm text-gray-500">${calc.totalIncomeEur.toFixed(2)} €</div>
+                            </div>
+                        </div>
+                        ${state.editingItem && state.editingItem.type === 'income' ? renderEditIncomeForm() : ''}
+                        <div class="space-y-1">
+                            ${data.income.length === 0 ? '<p class="text-gray-400 text-center py-8">Aucun revenu enregistré</p>' : ''}
+                            ${data.income.map(item => `
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center px-3 py-2 bg-green-50 rounded-lg hover:bg-green-100 transition-colors gap-2">
+                                    <div class="flex-1">
+                                        <span class="text-base font-bold text-gray-800">${item.name}</span>
+                                        <span class="text-sm text-gray-500 ml-3">${item.date}</span>
+                                    </div>
+                                    <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                                        <div class="text-right">
+                                            <div class="font-bold text-green-600">${item.amount.toLocaleString('fr-FR')} Rs</div>
+                                            <div class="text-sm text-gray-500">${(item.amount / (item.exchangeRate || state.exchangeRate)).toFixed(2)} €</div>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button onclick="editIncome(${item.id})" class="text-blue-500 hover:text-blue-700">✏️</button>
+                                            <button onclick="deleteIncome(${item.id})" class="text-red-500 hover:text-red-700">✕</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRecurringIncome(calc) {
+            const data = getCurrentData();
+            return `
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Ajouter un revenu fixe</h3>
+                        <form onsubmit="addRecurringIncome(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                            <input type="text" name="name" placeholder="Nom du revenu" required class="px-4 py-3 border border-gray-300 rounded-lg">
+                            <input type="number" step="0.01" name="amount" placeholder="Montant (Rs)" required autocomplete="off" class="px-4 py-3 border border-gray-300 rounded-lg">
+                            <select name="category" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <option value="Banque">Banque</option>
+                                <option value="Salaire">Salaire</option>
+                                <option value="Pension">Pension</option>
+                                <option value="Location">Location</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <button type="submit" class="bg-emerald-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-emerald-700">➕ Ajouter</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Revenus fixes mensuels</h3>
+                        <div class="space-y-3">
+                            ${data.recurringIncome.map(item => `
+                                <div class="flex justify-between items-center p-4 bg-emerald-50 rounded-lg">
+                                    <div>
+                                        <span class="font-medium text-gray-800">${item.name}</span>
+                                        <span class="text-sm text-gray-500 ml-3">(${item.category})</span>
+                                    </div>
+                                    <div class="flex items-center gap-4">
+                                        <div class="text-right">
+                                            <div class="font-bold text-emerald-600">${item.amount.toLocaleString('fr-FR')} Rs</div>
+                                            <div class="text-sm text-gray-500">${(item.amount / state.exchangeRate).toFixed(2)} €</div>
+                                        </div>
+                                        <button onclick="deleteRecurringIncome(${item.id})" class="text-red-500 hover:text-red-700 text-xl">✕</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-6 pt-6 border-t border-gray-200">
+                            <div class="flex justify-between items-center text-lg font-bold">
+                                <span class="text-gray-800">Total mensuel</span>
+                                <div class="text-right">
+                                    <div class="text-emerald-600">${calc.totalRecurringIncome.toLocaleString('fr-FR')} Rs</div>
+                                    <div class="text-sm text-gray-500 font-normal">${calc.totalRecurringIncomeEur.toFixed(2)} €</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderExpenses(calc) {
+            const data = getCurrentData();
+            // Trier par date décroissante
+            const sortedExpenses = [...data.expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            return `
+                <div class="space-y-6">
+                    ${state.editingItem && state.editingItem.type === 'expense' ? renderEditExpenseForm() : ''}
+                    
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Ajouter une dépense</h3>
+                        <form onsubmit="addExpense(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                            <input type="text" id="expenseName" name="name" placeholder="Nom de la dépense" required list="expenseNames"
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <datalist id="expenseNames"></datalist>
+                            <input type="number" step="0.01" name="amount" placeholder="Montant (Rs)" required
+                                autocomplete="off"
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <select name="category" class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                                ${categories.map(cat => `<option value="${cat.id}">${cat.name}</option>`).join('')}
+                            </select>
+                            <input type="date" name="date" value="${new Date().toISOString().split('T')[0]}"
+                                class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <button type="submit" class="bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 text-sm sm:text-base">➕ Ajouter</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-4 sm:p-6">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3 class="text-xl font-bold text-gray-800">Liste des dépenses</h3>
+                            <div class="text-right">
+                                <div class="text-lg sm:text-2xl font-bold text-red-600">${calc.totalExpenses.toLocaleString('fr-FR')} Rs</div>
+                                <div class="text-sm text-gray-500">${calc.totalExpensesEur.toFixed(2)} €</div>
+                            </div>
+                        </div>
+                        <!-- En-tête du tableau -->
+                        <div class="hidden sm:grid sm:grid-cols-12 gap-2 px-3 py-2 bg-gray-100 rounded-lg mb-1">
+                            <div class="col-span-4 text-xs font-bold text-gray-500 uppercase">Nom</div>
+                            <div class="col-span-2 text-xs font-bold text-gray-500 uppercase">Catégorie</div>
+                            <div class="col-span-2 text-xs font-bold text-gray-500 uppercase">Date</div>
+                            <div class="col-span-2 text-xs font-bold text-gray-500 uppercase text-right">Montant</div>
+                            <div class="col-span-2 text-xs font-bold text-gray-500 uppercase text-right">€</div>
+                        </div>
+                        <div class="space-y-1">
+                            ${sortedExpenses.length === 0 ? '<p class="text-gray-400 text-center py-8">Aucune dépense enregistrée</p>' : ''}
+                            ${sortedExpenses.map(item => {
+                                const category = categories.find(cat => cat.id === item.category);
+                                return `
+                                    <div class="flex sm:grid sm:grid-cols-12 gap-2 items-center px-3 py-2 bg-red-50 rounded-lg hover:bg-red-100 transition-colors">
+                                        <!-- Mobile : colonne -->
+                                        <div class="flex sm:hidden flex-col w-full">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-base font-bold text-gray-800">${item.name}</span>
+                                                <span class="font-bold text-red-600">${item.amount.toLocaleString('fr-FR')} Rs</span>
+                                            </div>
+                                            <div class="flex justify-between items-center mt-1">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-sm font-semibold px-2 py-0.5 rounded-full text-white" style="background-color: ${category?.color}">${category?.name}</span>
+                                                    <span class="text-xs text-gray-500">${item.date}</span>
+                                                </div>
+                                                <div class="flex items-center gap-3">
+                                                    <span class="text-xs text-gray-500">${(item.amount / (item.exchangeRate || state.exchangeRate)).toFixed(2)} €</span>
+                                                    <button onclick="editExpense(${item.id})" class="text-blue-500 hover:text-blue-700">✏️</button>
+                                                    <button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700">✕</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- Desktop : grille -->
+                                        <div class="hidden sm:contents">
+                                            <div class="col-span-4">
+                                                <span class="text-base font-bold text-gray-800">${item.name}</span>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <span class="text-sm font-semibold px-2 py-0.5 rounded-full text-white" style="background-color: ${category?.color}">${category?.name}</span>
+                                            </div>
+                                            <div class="col-span-2">
+                                                <span class="text-sm text-gray-600">${item.date}</span>
+                                            </div>
+                                            <div class="col-span-2 text-right">
+                                                <span class="font-bold text-red-600">${item.amount.toLocaleString('fr-FR')} Rs</span>
+                                            </div>
+                                            <div class="col-span-1 text-right">
+                                                <span class="text-sm text-gray-500">${(item.amount / (item.exchangeRate || state.exchangeRate)).toFixed(2)} €</span>
+                                            </div>
+                                            <div class="col-span-1 flex justify-end gap-2">
+                                                <button onclick="editExpense(${item.id})" class="text-blue-500 hover:text-blue-700">✏️</button>
+                                                <button onclick="deleteExpense(${item.id})" class="text-red-500 hover:text-red-700">✕</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEditExpenseForm() {
+            const item = state.editingItem.data;
+            return `
+                <div class="bg-blue-50 border-2 border-blue-500 rounded-xl shadow-lg p-4 sm:p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">✏️ Modifier la dépense</h3>
+                    <form onsubmit="saveEditExpense(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-4">
+                        <input type="text" name="name" value="${item.name}" required class="px-4 py-3 border border-gray-300 rounded-lg">
+                        <input type="number" step="0.01" name="amount" value="${item.amount}" required autocomplete="off" class="px-4 py-3 border border-gray-300 rounded-lg">
+                        <select name="category" class="px-4 py-3 border border-gray-300 rounded-lg">
+                            ${categories.map(cat => `<option value="${cat.id}" ${item.category === cat.id ? 'selected' : ''}>${cat.name}</option>`).join('')}
+                        </select>
+                        <input type="date" name="date" value="${item.date}" class="px-4 py-3 border border-gray-300 rounded-lg">
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700">💾 Sauver</button>
+                            <button type="button" onclick="cancelEdit()" class="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-600">❌ Annuler</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderEditIncomeForm() {
+            const item = state.editingItem.data;
+            return `
+                <div class="bg-green-50 border-2 border-green-500 rounded-xl shadow-lg p-4 sm:p-6 mb-3">
+                    <h3 class="text-lg font-bold text-gray-800 mb-3">✏️ Modifier le revenu</h3>
+                    <form onsubmit="saveEditIncome(event)" class="grid grid-cols-1 sm:grid-cols-5 gap-3">
+                        <input type="text" name="name" value="${item.name}" required class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                        <input type="number" step="0.01" name="amount" value="${item.originalAmount || item.amount}" required autocomplete="off" class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                        <select name="currency" class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                            <option value="Rs" ${(item.originalCurrency || 'Rs') === 'Rs' ? 'selected' : ''}>Roupies (Rs)</option>
+                            <option value="EUR" ${item.originalCurrency === 'EUR' ? 'selected' : ''}>Euros (€)</option>
+                        </select>
+                        <input type="date" name="date" value="${item.date}" class="px-4 py-3 border border-gray-300 rounded-lg text-sm sm:text-base">
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 bg-green-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-green-700 text-sm">💾 Sauver</button>
+                            <button type="button" onclick="cancelEdit()" class="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg font-medium hover:bg-gray-600 text-sm">❌ Annuler</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
+        function renderRecurring(calc) {
+            const data = getCurrentData();
+            return `
+                <div class="space-y-6">
+                    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <h3 class="text-base font-bold text-gray-800 mb-3">Ajouter une dépense fixe</h3>
+                        <form onsubmit="addRecurring(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                            <input type="text" name="name" placeholder="Nom de la dépense" required class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <input type="number" step="0.01" name="amount" placeholder="Montant (Rs)" required autocomplete="off" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                            <select name="category" class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                                <option value="Logement">Logement</option>
+                                <option value="Abonnements">Abonnements</option>
+                                <option value="Transport">Transport</option>
+                                <option value="Assurances">Assurances</option>
+                                <option value="Autres">Autres</option>
+                            </select>
+                            <button type="submit" class="bg-orange-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-orange-700 text-sm">➕ Ajouter</button>
+                        </form>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-lg p-3 sm:p-4">
+                        <h3 class="text-base font-bold text-gray-800 mb-2">Dépenses fixes mensuelles</h3>
+                        <div class="space-y-0.5">
+                            ${data.recurringExpenses.map(item => `
+                                <div class="flex justify-between items-center px-2 py-1.5 bg-orange-50 rounded-lg">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="font-semibold text-gray-800 text-sm">${item.name}</span>
+                                        <span class="text-xs text-gray-400 bg-orange-100 px-1.5 py-0.5 rounded-full" style="font-size: 10px;">${item.category}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <input type="number" step="0.01" value="${item.amount}" 
+                                            onchange="updateRecurringAmount(${item.id}, this.value)"
+                                            autocomplete="off"
+                                            placeholder="Montant"
+                                            class="w-20 px-1.5 py-1 border border-gray-300 rounded text-xs font-bold text-orange-600 text-right">
+                                        <div class="text-xs text-gray-500 w-14 text-right" style="font-size: 10px;">${(item.amount / state.exchangeRate).toFixed(2)} €</div>
+                                        <button onclick="deleteRecurring(${item.id})" class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-3 pt-2 border-t border-gray-200">
+                            <div class="flex justify-between items-center font-bold">
+                                <span class="text-gray-800 text-sm">Total mensuel</span>
+                                <div class="text-right">
+                                    <div class="text-orange-600 text-base">${calc.totalRecurring.toLocaleString('fr-FR')} Rs</div>
+                                    <div class="text-xs text-gray-500 font-normal">${calc.totalRecurringEur.toFixed(2)} €</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Setup autocomplete
+        function setupAutocomplete() {
+            const datalist = document.getElementById('expenseNames');
+            if (datalist) {
+                const names = getAllExpenseNames();
+                datalist.innerHTML = names.map(name => `<option value="${name}">`).join('');
+            }
+        }
+
+        // Actions
+        window.changeTab = (tab) => {
+            state.activeTab = tab;
+            state.editingItem = null;
+            saveData();
+            render();
+        };
+        
+        window.changeYearView = (year) => {
+            state.selectedYearView = year;
+            render();
+        };
+        
+        // Backup rapide
+        window.quickBackup = () => {
+            try {
+                const exportObj = {
+                    version: '1.0',
+                    exportDate: new Date().toISOString(),
+                    exchangeRate: state.exchangeRate,
+                    monthlyData: state.monthlyData
+                };
+                
+                const dataStr = JSON.stringify(exportObj, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                
+                const now = new Date();
+                const date = now.toISOString().split('T')[0];
+                const time = now.toTimeString().split(' ')[0].replace(/:/g, '-');
+                link.download = 'backup-' + date + '-' + time + '.json';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                const monthsCount = Object.keys(state.monthlyData).length;
+                alert('💾 Backup sauvegardé !\\n\\n' + monthsCount + ' mois • ' + date);
+            } catch (e) {
+                alert('❌ Erreur : ' + e.message);
+            }
+        };
+
+        
+        // Export des données
+        window.exportData = () => {
+            try {
+                const exportObj = {
+                    version: '1.0',
+                    exportDate: new Date().toISOString(),
+                    exchangeRate: state.exchangeRate,
+                    monthlyData: state.monthlyData
+                };
+                
+                const dataStr = JSON.stringify(exportObj, null, 2);
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                
+                const date = new Date().toISOString().split('T')[0];
+                link.download = 'finances-backup-' + date + '.json';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                alert('Données exportées avec succès ! Fichier : finances-backup-' + date + '.json');
+            } catch (e) {
+                alert('Erreur : ' + e.message);
+            }
+        };
+        
+        // Import des données
+        window.importData = (event) => {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    
+                    if (!importedData.monthlyData) {
+                        alert('Fichier invalide !');
+                        return;
+                    }
+                    
+                    const nbMois = Object.keys(importedData.monthlyData).length;
+                    const confirmation = confirm('Import de ' + nbMois + ' mois. Cela va remplacer toutes vos données. Continuer ?');
+                    
+                    if (!confirmation) {
+                        event.target.value = '';
+                        return;
+                    }
+                    
+                    state.exchangeRate = importedData.exchangeRate || state.exchangeRate;
+                    state.monthlyData = importedData.monthlyData;
+                    state.selectedMonth = new Date().getMonth();
+                    state.selectedYear = new Date().getFullYear();
+                    state.activeTab = 'expenses';
+                    
+                    saveData();
+                    render();
+                    
+                    alert('Import réussi ! ' + nbMois + ' mois importés.');
+                    event.target.value = '';
+                    
+                } catch (e) {
+                    alert('Erreur : ' + e.message);
+                    event.target.value = '';
+                }
+            };
+            
+            reader.readAsText(file);
+        };
+        window.previousMonth = () => {
+            if (state.selectedMonth === 0) {
+                state.selectedMonth = 11;
+                state.selectedYear--;
+            } else {
+                state.selectedMonth--;
+            }
+            initMonthData(getCurrentMonthKey());
+            saveData();
+            render();
+        };
+
+        window.nextMonth = () => {
+            if (state.selectedMonth === 11) {
+                state.selectedMonth = 0;
+                state.selectedYear++;
+            } else {
+                state.selectedMonth++;
+            }
+            initMonthData(getCurrentMonthKey());
+            saveData();
+            render();
+        };
+
+        window.editRate = () => {
+            const newRate = prompt('Entrez le nouveau taux de change (1 € = X Rs):', state.exchangeRate);
+            if (newRate && !isNaN(newRate) && parseFloat(newRate) > 0) {
+                state.exchangeRate = parseFloat(newRate);
+                saveData();
+                render();
+            }
+        };
+
+        window.addIncome = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const currency = formData.get('currency');
+            const amount = parseFloat(formData.get('amount'));
+            const amountInRs = currency === 'EUR' ? amount * state.exchangeRate : amount;
+            
+            const data = getCurrentData();
+            data.income.push({
+                id: Date.now(),
+                name: formData.get('name'),
+                amount: amountInRs,
+                date: formData.get('date'),
+                exchangeRate: state.exchangeRate,
+                originalAmount: amount,
+                originalCurrency: currency
+            });
+            
+            // Trier par date (plus récent en premier)
+            data.income.sort((a, b) => new Date(b.date) - new Date(a.date));
+            
+            saveData();
+            render();
+        };
+
+        window.editIncome = (id) => {
+            const data = getCurrentData();
+            const item = data.income.find(i => i.id === id);
+            if (item) {
+                state.editingItem = { type: 'income', id: id, data: item };
+                render();
+            }
+        };
+
+        window.saveEditIncome = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = getCurrentData();
+            const item = data.income.find(i => i.id === state.editingItem.id);
+            if (item) {
+                const currency = formData.get('currency');
+                const amount = parseFloat(formData.get('amount'));
+                item.name = formData.get('name');
+                item.amount = currency === 'EUR' ? amount * state.exchangeRate : amount;
+                item.date = formData.get('date');
+                item.originalAmount = amount;
+                item.originalCurrency = currency;
+                item.exchangeRate = state.exchangeRate;
+                data.income.sort((a, b) => new Date(b.date) - new Date(a.date));
+            }
+            state.editingItem = null;
+            saveData();
+            render();
+        };
+
+        window.deleteIncome = (id) => {
+            if (confirm('Voulez-vous vraiment supprimer ce revenu ?')) {
+                const data = getCurrentData();
+                data.income = data.income.filter(item => item.id !== id);
+                saveData();
+                render();
+            }
+        };
+
+        window.addRecurringIncome = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = getCurrentData();
+            data.recurringIncome.push({
+                id: Date.now(),
+                name: formData.get('name'),
+                amount: parseFloat(formData.get('amount')),
+                category: formData.get('category')
+            });
+            saveData();
+            render();
+        };
+
+        window.deleteRecurringIncome = (id) => {
+            if (confirm('Voulez-vous vraiment supprimer ce revenu fixe ?')) {
+                const data = getCurrentData();
+                data.recurringIncome = data.recurringIncome.filter(item => item.id !== id);
+                saveData();
+                render();
+            }
+        };
+
+        window.addExpense = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = getCurrentData();
+            data.expenses.push({
+                id: Date.now(),
+                name: formData.get('name'),
+                amount: parseFloat(formData.get('amount')),
+                category: formData.get('category'),
+                date: formData.get('date'),
+                exchangeRate: state.exchangeRate
+            });
+            saveData();
+            render();
+        };
+
+        window.editExpense = (id) => {
+            const data = getCurrentData();
+            const item = data.expenses.find(i => i.id === id);
+            if (item) {
+                state.editingItem = { type: 'expense', data: item };
+                render();
+            }
+        };
+
+        window.saveEditExpense = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = getCurrentData();
+            const item = data.expenses.find(i => i.id === state.editingItem.data.id);
+            if (item) {
+                item.name = formData.get('name');
+                item.amount = parseFloat(formData.get('amount'));
+                item.category = formData.get('category');
+                item.date = formData.get('date');
+                state.editingItem = null;
+                saveData();
+                render();
+            }
+        };
+
+        window.cancelEdit = () => {
+            state.editingItem = null;
+            render();
+        };
+
+        window.deleteExpense = (id) => {
+            if (confirm('Voulez-vous vraiment supprimer cette dépense ?')) {
+                const data = getCurrentData();
+                data.expenses = data.expenses.filter(item => item.id !== id);
+                saveData();
+                render();
+            }
+        };
+
+        window.addRecurring = (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = getCurrentData();
+            data.recurringExpenses.push({
+                id: Date.now(),
+                name: formData.get('name'),
+                amount: parseFloat(formData.get('amount')),
+                category: formData.get('category'),
+                fixed: false
+            });
+            saveData();
+            render();
+        };
+
+        window.updateRecurringAmount = (id, newAmount) => {
+            const data = getCurrentData();
+            const item = data.recurringExpenses.find(i => i.id === id);
+            if (item) {
+                item.amount = parseFloat(newAmount);
+                saveData();
+                render();
+            }
+        };
+
+        window.deleteRecurring = (id) => {
+            if (confirm('Voulez-vous vraiment supprimer cette dépense fixe ?')) {
+                const data = getCurrentData();
+                data.recurringExpenses = data.recurringExpenses.filter(item => item.id !== id);
+                saveData();
+                render();
+            }
+        };
+
+        // Initialisation
+        loadData();
+        render();
+    </script>
+</body>
+</html>
